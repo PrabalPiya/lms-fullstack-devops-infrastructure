@@ -6,20 +6,15 @@ backend:
     tag: latest
     pullPolicy: Always
   port: 5000
+  replicas: 1
 
-frontend:
-  image:
-    repository: xpocky/lmsfrontend
-    tag: latest
-    pullPolicy: Always
+service:
+  type: LoadBalancer
   port: 80
-
-postgres:
-  image: postgres:16-alpine
-  database: learnhub_lms
-  username: postgres
-  port: 5432
-  storage: 1Gi
+  targetPort: 5000
 
 secrets:
   existingSecret: lms-secrets
+
+app:
+  clientUrl: "http://localhost:5173"

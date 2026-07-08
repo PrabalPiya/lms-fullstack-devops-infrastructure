@@ -3,8 +3,10 @@ kind: Deployment
 metadata:
   name: lmsbackend
   namespace: {{ .Values.namespace }}
+  labels:
+    app: lmsbackend
 spec:
-  replicas: 1
+  replicas: {{ .Values.backend.replicas }}
   selector:
     matchLabels:
       app: lmsbackend
@@ -20,22 +22,20 @@ spec:
           ports:
             - containerPort: {{ .Values.backend.port }}
           env:
+            - name: PORT
+              value: "{{ .Values.backend.port }}"
+
+            - name: CLIENT_URL
+              value: "{{ .Values.app.clientUrl }}"
+
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.existingSecret }}
                   key: DATABASE_URL
+
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.existingSecret }}
                   key: JWT_SECRET
-            - name: JWT_EXPIRES_IN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.existingSecret }}
-                  key: JWT_EXPIRES_IN
-            - name: PORT
-              value: "{{ .Values.backend.port }}"
-            - name: CLIENT_URL
-              value: "http://localhost:{{ .Values.frontend.port }}"
