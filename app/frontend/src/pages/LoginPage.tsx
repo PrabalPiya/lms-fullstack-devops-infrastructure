@@ -55,12 +55,6 @@ export function LoginPage() {
 
         <p className="authSwitch">No account? <Link to="/register">Create one</Link></p>
 
-        <div className="demoBox">
-          <strong>Demo accounts</strong>
-          <span>Admin: admin@learnhub.local / Admin@12345</span>
-          <span>Instructor: instructor@learnhub.local / Instructor@12345</span>
-          <span>Student: student@learnhub.local / Student@12345</span>
-        </div>
       </section>
     </div>
   );
