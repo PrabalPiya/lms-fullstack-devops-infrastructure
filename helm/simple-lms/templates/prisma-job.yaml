@@ -17,10 +17,6 @@ spec:
             - |
               echo "Running Prisma db push..."
               npx prisma db push
-
-              echo "Running seed..."
-              npm run seed
-
               echo "Database setup completed."
           env:
             - name: DATABASE_URL
