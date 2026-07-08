@@ -8,6 +8,8 @@ on:
       - "app/**"
       - ".github/workflows/docker-image.yml"
 
+permissions:
+  contents: write
 jobs:
   docker-build-push:
     runs-on: ubuntu-latest
