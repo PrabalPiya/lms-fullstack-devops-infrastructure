@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lms-prisma-db-push
+  namespace: lms
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: prisma
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - |
+              echo "Running Prisma db push..."
+              npx prisma db push
+
+              echo "Running seed..."
+              npm run seed
+
+              echo "Database setup completed."
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.existingSecret }}
+                  key: DATABASE_URL
+  backoffLimit: 3

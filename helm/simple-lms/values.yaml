@@ -1,0 +1,25 @@
+namespace: lms
+
+backend:
+  image:
+    repository: xpocky/lmsbackend
+    tag: latest
+    pullPolicy: Always
+  port: 5000
+
+frontend:
+  image:
+    repository: xpocky/lmsfrontend
+    tag: latest
+    pullPolicy: Always
+  port: 80
+
+postgres:
+  image: postgres:16-alpine
+  database: learnhub_lms
+  username: postgres
+  port: 5432
+  storage: 1Gi
+
+secrets:
+  existingSecret: lms-secrets
