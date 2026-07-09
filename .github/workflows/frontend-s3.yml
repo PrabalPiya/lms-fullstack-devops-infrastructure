@@ -1,4 +1,4 @@
-name: Frontend S3 Deploy
+name: Deploy Frontend
 
 on:
   push:
@@ -6,38 +6,42 @@ on:
       - main
     paths:
       - "app/frontend/**"
-      - ".github/workflows/frontend-s3.yml"
+      - ".github/workflows/deploy-frontend.yml"
 
 jobs:
-  frontend-build-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Get code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: app/frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: app/frontend
+        env:
+          VITE_API_URL: /api
+        run: npm run build
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install frontend dependencies
-        working-directory: ./app/frontend
-        run: npm install
+      - name: Upload to S3
+        run: aws s3 sync app/frontend/dist s3://${{ secrets.FRONTEND_BUCKET_NAME }} --delete
 
-      - name: Build frontend
-        working-directory: ./app/frontend
-        run: npm run build
-        env:
-          VITE_API_URL: /api
-
-      - name: Upload frontend to S3
-        run: |
-          aws s3 sync ./app/frontend/dist s3://${{ secrets.S3_BUCKET_NAME }} --delete
-
-      - name: Invalidate CloudFront cache
+      - name: Clear CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
