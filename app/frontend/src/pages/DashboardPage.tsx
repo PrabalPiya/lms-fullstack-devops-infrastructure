@@ -27,7 +27,7 @@ export function DashboardPage() {
       <header className="pageHeader">
         <div>
           <span className="eyebrow">Dashboard</span>
-          <h1>Hello!, {user?.name}</h1>
+          <h1>Hello, {user?.name}</h1>
           <p>Track your LMS activity from one simple dashboard.</p>
         </div>
       </header>
